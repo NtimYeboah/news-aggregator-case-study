@@ -35,4 +35,25 @@ return [
         ],
     ],
 
+    'news' => [
+        'retrieval_interval_minutes' => env('NEWS_RETRIEVAL_INTERVAL_MINUTES'),
+
+        'sources' => [
+            'news_api' => [
+                'api_key' => env('NEWSAPI_APIKEY'),
+                'base_url' => env('NEWSAPI_BASE_URL'),
+            ],
+
+            'new_york_times' => [
+                'api_key' => env('NEWYORKTIMES_APIKEY'),
+                'base_url' => env('NEWYORKTIMES_BASE_URL'),
+            ],
+
+            'guardian' => [
+                'api_key' => env('GUARDIANAPI_APIKEY'),
+                'base_url' => env('GUARDIANAPI_BASE_URL'),
+            ],
+        ],
+    ],
+
 ];
