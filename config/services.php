@@ -40,17 +40,17 @@ return [
 
         'sources' => [
             'news_api' => [
-                'api_key' => env('NEWSAPI_APIKEY'),
+                'api_key' => env('NEWSAPI_API_KEY'),
                 'base_url' => env('NEWSAPI_BASE_URL'),
             ],
 
             'new_york_times' => [
-                'api_key' => env('NEWYORKTIMES_APIKEY'),
+                'api_key' => env('NEWYORKTIMES_API_KEY'),
                 'base_url' => env('NEWYORKTIMES_BASE_URL'),
             ],
 
             'guardian' => [
-                'api_key' => env('GUARDIANAPI_APIKEY'),
+                'api_key' => env('GUARDIANAPI_API_KEY'),
                 'base_url' => env('GUARDIANAPI_BASE_URL'),
             ],
         ],

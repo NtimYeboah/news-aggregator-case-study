@@ -34,7 +34,7 @@ class NewsApi extends Source
      */
     public function url(): string
     {
-        $url = "{$this->endpoint()}?apiKey={$this->apiKey()}";
+        $url = "{$this->baseUrl()}?apiKey={$this->apiKey()}";
 
         if ($searchTerm = $this->queryParameters->searchTerm()) {
             $url = $url . "&q={$searchTerm}";

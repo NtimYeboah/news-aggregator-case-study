@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Author;
+use App\Models\Category;
+use App\Models\Source;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +25,7 @@ return new class extends Migration
             $table->text('url');
             $table->text('image_url')->nullable();
             $table->text('api_url')->nullable();
-            $table->timestamp('published_at');
+            $table->timestampTz('published_at');
             $table->timestamps();
         });
     }

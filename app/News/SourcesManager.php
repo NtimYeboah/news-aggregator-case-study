@@ -14,17 +14,9 @@ class SourcesManager
      */
     public array $config;
 
-    /**
-     * Retrieval interval value.
-     *
-     * @var string
-     */
-    protected string $retrievalInterval;
-
     public function __construct()
     {
-        $this->config = config('services.news.sources');
-        $this->retrievalInterval = config('services.news.retrieval_interval_minutes');
+        $this->config = config('services.news');
     }
 
     /**
@@ -36,7 +28,7 @@ class SourcesManager
     {
         $sources = collect();
 
-        foreach ($this->config as $sourceKey => $config) {
+        foreach ($this->config['sources'] as $sourceKey => $config) {
             $sourceClass = '\\App\\News\\Sources\\'. Str::studly($sourceKey);
 
             $sources->push(new $sourceClass($config));
@@ -52,6 +44,6 @@ class SourcesManager
      */
     public function retrievalInterval()
     {
-        return $this->retrievalInterval;
+        return $this->config['retrieval_interval_minutes'];
     }
 }

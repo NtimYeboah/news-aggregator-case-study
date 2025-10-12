@@ -34,7 +34,7 @@ class NewYorkTimes extends Source
      */
     public function url(): string
     {
-        $url = "{$this->endpoint()}?api-key={$this->apiKey()}";
+        $url = "{$this->baseUrl()}?api-key={$this->apiKey()}";
 
         if ($searchTerm = $this->queryParameters->searchTerm()) {
             $url = $url . "&q={$searchTerm}";
