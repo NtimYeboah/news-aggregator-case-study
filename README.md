@@ -2,7 +2,7 @@
 
 Innoscripta case study - Backend Developer
 
-This application fetches news from NewsAPI, The Guardian and The New York Times and saves them locally in the database.
+This application aggregates news from NewsAPI, The Guardian and The New York Times and saves them locally in the database.
 
 It provides an API endpoint for the frontend application to interact with the backend. This endpoint
 allows the frontend to retrieve articles based on search queries, filtering criteria (date, category, source), and user preferences (selected sources, categories, authors).
