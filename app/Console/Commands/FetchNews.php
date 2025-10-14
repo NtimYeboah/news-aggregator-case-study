@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\NewsRetrievalHandler;
+use App\Jobs\GetNews;
+use App\News\SourcesManager;
 use Illuminate\Console\Command;
 
 class FetchNews extends Command
@@ -26,6 +27,6 @@ class FetchNews extends Command
      */
     public function handle()
     {
-        app(NewsRetrievalHandler::class)->execute();
+        GetNews::dispatch(app(SourcesManager::class));
     }
 }

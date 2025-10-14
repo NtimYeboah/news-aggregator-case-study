@@ -48,8 +48,8 @@ class NewsApi extends Source
             $url = $url . "&to={$retrieveTo->toDateString()}";
         }
 
-        if ($pageSize = $this->queryParameters->pageSize()) {
-            $url = $url . "&pageSize={$pageSize}";
+        if ($page = $this->queryParameters->page()) {
+            $url = $url . "&page={$page}";
         }
 
         return $url;

@@ -27,8 +27,8 @@ class Guardian extends Source
             $url = $url . "&to-date={$retrieveTo->toDateString()}";
         }
 
-        if ($pageSize = $this->queryParameters->pageSize()) {
-            $url = $url . "&page={$pageSize}";
+        if ($page = $this->queryParameters->page()) {
+            $url = $url . "&page={$page}";
         }
 
         return $url;

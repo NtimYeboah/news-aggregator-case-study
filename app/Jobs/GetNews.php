@@ -2,7 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Enums\NewsRetrievalAttemptStatus;
+use App\Enums\NewsRetrievalEventStatus;
 use App\Models\NewsRetrievalAttempt;
+use App\Models\NewsRetrievalEvent;
+use App\News\Source;
+use App\News\SourcesManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -26,7 +31,7 @@ class GetNews implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public NewsRetrievalAttempt $retrievalAttempt)
+    public function __construct(public SourcesManager $sources)
     {
         //
     }
@@ -36,29 +41,96 @@ class GetNews implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->retrievalAttempt->setStarted();
-        
-        $response = Http::retry(self::RETRY, self::RETRY_WAIT_TIME)
-            ->get($this->retrievalAttempt->getUrl());
-
-        $response->throwIf($response->failed());
-
-        $this->retrievalAttempt->setCompleted($response);
-
-        $sourceTransformer = 'App\\News\\Transformers\\'. Str::studly($this->retrievalAttempt->source);
-
-        TransformResponse::dispatch($response->json(), $sourceTransformer);
+        foreach ($this->sources->get() as $source) {
+            $this->getNewsFromSource($source);
+        }
     }
 
     /**
-     * Called when job fails.
+     * Get news from source.
      *
-     * @param Throwable|null $exception
+     * @param Source $source
      * @return void
      */
-    public function failed(?Throwable $exception): void
+    protected function getNewsFromSource(Source $source): void
     {
-        $this->retrievalAttempt->setFailed();
+        $latestNewsRetrievalEvent = $this->getLatestEvent($source);
+
+        $iterations = 1;
+        $pages = 1;
+
+        do {
+            $this->setSourceQueryParameters($source, $latestNewsRetrievalEvent, $iterations);
+
+            $retrievalAttempt = $this->createRetrievalAttempt($source, $latestNewsRetrievalEvent);
+
+            $response = Http::retry(self::RETRY, self::RETRY_WAIT_TIME)
+                ->get($retrievalAttempt->getUrl());
+
+            if ($response->failed()) {
+                $retrievalAttempt->setFailed();
+                $iterations = $pages + 1; // stop the loop
+            }
+
+            $retrievalAttempt->setCompleted($response);
+
+            $sourcePaginator = 'App\\News\\Paginators\\'. Str::studly($retrievalAttempt->source);
+            $pages = (new $sourcePaginator($response->json()))->getPageTotal();
+
+            if ($pages > 1) {
+                $iterations++;
+            }
+
+            $sourceTransformer = 'App\\News\\Transformers\\'. Str::studly($retrievalAttempt->source);
+            (new $sourceTransformer($response->json()))->process();
+        } while ($iterations <= $pages);
+    }
+
+    /**
+     * Get latest event that happened for source.
+     *
+     * @param Source $source
+     * @return NewsRetrievalEvent $latestNewsRetrievalEvent
+     */
+    protected function getLatestEvent(Source $source): NewsRetrievalEvent
+    {
+        $latestNewsRetrievalEvent = NewsRetrievalEvent::for($source->name())->latest()->first();
+
+        if (! $latestNewsRetrievalEvent || $latestNewsRetrievalEvent->successful()) {
+            $latestNewsRetrievalEvent = NewsRetrievalEvent::create([
+                'source' => $source->name(),
+                'status' => NewsRetrievalEventStatus::STARTED->value,
+                'started_at' => now()->subMinutes($this->sources->retrievalInterval()),
+            ]);
+        }
+
+        return $latestNewsRetrievalEvent;
+    }
+
+    protected function createRetrievalAttempt(Source $source, NewsRetrievalEvent $newsRetrievalEvent): NewsRetrievalAttempt
+    {
+        return NewsRetrievalAttempt::create([
+            'event_id' => $newsRetrievalEvent->getKey(),
+            'retrieved_from' => $newsRetrievalEvent->started_at,
+            'started_at' => now(),
+            'status' => NewsRetrievalAttemptStatus::STARTED->value,
+            'source' => $source->name(),
+            'url' => $source->url(),
+        ]);
+    }
+
+    /**
+     * Set query parameters on source.
+     *
+     * @param Source $source
+     * @param NewsRetrievalEvent $retrievalEvent
+     * @return void
+     */
+    protected function setSourceQueryParameters(Source $source, NewsRetrievalEvent $retrievalEvent, int $page): void
+    {
+        $source->setQueryParameters([
+            'retrieve_from' => $retrievalEvent->started_at,
+            'page' => $page,
+        ]);
     }
 }
-

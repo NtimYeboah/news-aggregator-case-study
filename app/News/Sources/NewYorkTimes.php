@@ -52,6 +52,10 @@ class NewYorkTimes extends Source
             $url = $url . "&pageSize={$pageSize}";
         }
 
+        if ($page = $this->queryParameters->page()) {
+            $url = $url . "&page={$page}";
+        }
+
         return $url;
     }
 }
