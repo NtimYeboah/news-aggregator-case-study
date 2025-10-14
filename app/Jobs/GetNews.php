@@ -74,15 +74,13 @@ class GetNews implements ShouldQueue
 
             $retrievalAttempt->setCompleted($response);
 
-            $sourcePaginator = 'App\\News\\Paginators\\'. Str::studly($retrievalAttempt->source);
-            $pages = (new $sourcePaginator($response->json()))->getPageTotal();
+            $pages = $source->getPageTotal($response->json());
 
             if ($pages > 1) {
                 $iterations++;
             }
 
-            $sourceTransformer = 'App\\News\\Transformers\\'. Str::studly($retrievalAttempt->source);
-            (new $sourceTransformer($response->json()))->process();
+            $source->transform($response->json());
         } while ($iterations <= $pages);
     }
 

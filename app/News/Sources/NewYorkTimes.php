@@ -3,6 +3,8 @@
 namespace App\News\Sources;
 
 use App\News\Source;
+use App\News\Paginators\NewYorkTimes as NewYorkTimesPaginator;
+use App\News\Transformers\NewYorkTimes as NewYorkTimesTransformer;
 use App\ValueObjects\QueryParameters;
 
 class NewYorkTimes extends Source
@@ -57,5 +59,31 @@ class NewYorkTimes extends Source
         }
 
         return $url;
+    }
+
+    /**
+     * Transform article to consistent format.
+     *
+     * @param array $body
+     * @return array
+     */
+    public function transform(array $body): array
+    {
+        $transformer = new NewYorkTimesTransformer($body);
+
+        $transformer->process();
+    }
+
+    /**
+     * Get the total articles for an event.
+     *
+     * @param array $body
+     * @return integer
+     */
+    public function getPageTotal(array $body): int
+    {
+        $paginator = new NewYorkTimesPaginator($body);
+
+        return $paginator->getPageTotal();
     }
 }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content')->nullable();
             $table->text('description')->nullable();
-            $table->text('url');
+            $table->string('url', 512)->unique();
             $table->text('image_url')->nullable();
             $table->text('api_url')->nullable();
             $table->timestampTz('published_at');

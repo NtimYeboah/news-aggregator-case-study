@@ -23,6 +23,6 @@ class Guardian extends Paginator
      */
     public function getPageTotal(): int
     {
-        return $this->response['response']['pages'];
+        return (int) $this->response['response']['pages'];
     }
 }

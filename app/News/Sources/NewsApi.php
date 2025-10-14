@@ -3,6 +3,8 @@
 namespace App\News\Sources;
 
 use App\News\Source;
+use App\News\Paginators\NewsApi as NewsApiPaginator;
+use App\News\Transformers\NewsApi as NewsApiTransformer;
 use App\ValueObjects\QueryParameters;
 
 class NewsApi extends Source
@@ -53,5 +55,31 @@ class NewsApi extends Source
         }
 
         return $url;
+    }
+
+    /**
+     * Transform article to consistent format.
+     *
+     * @param array $body
+     * @return array
+     */
+    public function transform(array $body): array
+    {
+        $transformer = new NewsApiTransformer($body);
+
+        $transformer->process();
+    }
+
+    /**
+     * Get the total articles for an event.
+     *
+     * @param array $body
+     * @return integer
+     */
+    public function getPageTotal(array $body): int
+    {
+        $paginator = new NewsApiPaginator($body);
+
+        return $paginator->getPageTotal();
     }
 }

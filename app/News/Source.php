@@ -35,6 +35,22 @@ abstract class Source
     public abstract function url(): string;
 
     /**
+     * Get the total articles for an event.
+     *
+     * @param array $body
+     * @return integer
+     */
+    public abstract function getPageTotal(array $body): int;
+
+    /**
+     * Transform article to consistent format.
+     *
+     * @param array $body
+     * @return array
+     */
+    public abstract function transform(array $body): array;
+
+    /**
      * Get the name of the class.
      *
      * @return string

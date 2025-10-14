@@ -3,6 +3,8 @@
 namespace App\News\Sources;
 
 use App\News\Source;
+use App\News\Paginators\Guardian as GuardianPaginator;
+use App\News\Transformers\Guardian as GuardianTransformer;
 
 class Guardian extends Source
 {
@@ -32,5 +34,31 @@ class Guardian extends Source
         }
 
         return $url;
+    }
+
+    /**
+     * Transform article to consistent format.
+     *
+     * @param array $body
+     * @return array
+     */
+    public function transform(array $body): array
+    {
+        $transformer = new GuardianTransformer($body);
+
+        $transformer->process();
+    }
+
+    /**
+     * Get the total articles for an event.
+     *
+     * @param array $body
+     * @return integer
+     */
+    public function getPageTotal(array $body): int
+    {
+        $paginator = new GuardianPaginator($body);
+
+        return $paginator->getPageTotal();
     }
 }

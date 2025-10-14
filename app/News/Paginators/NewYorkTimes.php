@@ -23,6 +23,6 @@ class NewYorkTimes extends Paginator
      */
     public function getPageTotal(): int
     {
-        return $this->response['response']['metadata']['time'];
+        return (int) $this->response['response']['metadata']['time'];
     }
 }

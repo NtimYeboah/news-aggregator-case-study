@@ -6,6 +6,8 @@ use App\Models\Author;
 use App\Models\Category;
 use App\Models\News;
 use App\Models\Source;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class SaveNewsHandler
@@ -34,7 +36,11 @@ class SaveNewsHandler
         $author = $this->saveAuthor();
         $category = $this->saveCategory();
         
-        News::saveOne($source, $author, $category, $this->article);
+        try {
+            News::saveOne($source, $author, $category, $this->article);
+        } catch (UniqueConstraintViolationException $exception) {
+            Log::error('Duplicate article:::' . $this->article['url']);
+        }
     }
 
     /**
