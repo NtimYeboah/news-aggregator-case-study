@@ -12,7 +12,7 @@ allows the frontend to retrieve articles based on search queries, filtering crit
 ### Environment Variables
 Provide the values for the environment variables for these news sources. Get the API keys from the news sources and set them in `.env` file.
 
-Set the value for the `NEWS_RETRIEVAL_INTERVAL_MINUTES` environment variable. This is a number in minutes of intervals used to fetch the articles. 
+Set the `NEWS_RETRIEVAL_INTERVAL_MINUTES` environment variable to define how often (in minutes) news are fetched from the sources.
 
 ```sh
 NEWS_RETRIEVAL_INTERVAL_MINUTES=5
@@ -41,7 +41,7 @@ php artisan schedule:work
 
 
 
-## Fetching news articles from backend
+## Frontend interacting with the backend to retrieve news
 Use the `/api/news` endpoint to fetch news from the backend. This endpoint include parameters to filter the news results. You can filter by:
 1. Source.
 2. Category.
