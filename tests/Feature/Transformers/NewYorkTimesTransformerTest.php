@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Transformers;
 
 use App\Models\News;
 use App\News\Transformers\NewYorkTimes;
