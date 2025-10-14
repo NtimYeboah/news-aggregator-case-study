@@ -46,9 +46,9 @@ abstract class Source
      * Transform article to consistent format.
      *
      * @param array $body
-     * @return array
+     * @return void
      */
-    public abstract function transform(array $body): array;
+    public abstract function transform(array $body): void;
 
     /**
      * Get the name of the class.

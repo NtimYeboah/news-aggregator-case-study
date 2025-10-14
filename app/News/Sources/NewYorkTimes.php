@@ -65,9 +65,9 @@ class NewYorkTimes extends Source
      * Transform article to consistent format.
      *
      * @param array $body
-     * @return array
+     * @return void
      */
-    public function transform(array $body): array
+    public function transform(array $body): void
     {
         $transformer = new NewYorkTimesTransformer($body);
 

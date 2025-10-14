@@ -23,7 +23,7 @@ class NewYorkTimes extends Transformer
     public function __construct(array $response)
     {
         $this->status = $response['status'];
-        $this->news = $response['response']['docs'];
+        $this->news = $response['response']['docs'] ?? [];
     }
 
     /**
@@ -99,6 +99,6 @@ class NewYorkTimes extends Transformer
      */
     public function isValid(array $data): bool
     {
-        return true;
+        return count($data) >= 1;
     }
 }

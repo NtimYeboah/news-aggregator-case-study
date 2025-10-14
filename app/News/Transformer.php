@@ -60,14 +60,16 @@ abstract class Transformer
      */
     public function process()
     {
-        foreach ($this->news as $news) {
-            if (! $this->isValid($news)) {
-                continue;
-            }
+        if (count($this->news) >= 1) {
+            foreach ($this->news as $news) {
+                if (! $this->isValid($news)) {
+                    continue;
+                }
 
-            $transformed = $this->transform($news);
-            
-            (new SaveNewsHandler($transformed))->execute();
+                $transformed = $this->transform($news);
+
+                (new SaveNewsHandler($transformed))->execute();
+            }
         }
     }
 
