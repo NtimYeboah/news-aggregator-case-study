@@ -10,6 +10,7 @@ use App\News\Source;
 use App\News\SourcesManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Throwable;
@@ -64,12 +65,17 @@ class GetNews implements ShouldQueue
 
             $retrievalAttempt = $this->createRetrievalAttempt($source, $latestNewsRetrievalEvent);
 
-            $response = Http::retry(self::RETRY, self::RETRY_WAIT_TIME)
-                ->get($retrievalAttempt->getUrl());
+            try {
+                $response = Http::retry(self::RETRY, self::RETRY_WAIT_TIME)
+                    ->get($retrievalAttempt->getUrl())
+                    ->throw();
+            } catch (RequestException $exception) {
+                if ($exception->getCode() === 429) {
+                    logger('Request was rate limited:::' . $source->url());
+                    break;
+                }
 
-            if ($response->failed()) {
-                $retrievalAttempt->setFailed();
-                $iterations = $pages + 1; // stop the loop
+                throw $exception;
             }
 
             $retrievalAttempt->setCompleted($response);
